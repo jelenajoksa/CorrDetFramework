@@ -1,5 +1,5 @@
 data_source:
-  source: data/original_data.csv
+  source: data/data/original_data.csv
 
 
 cutoff:
@@ -16,9 +16,9 @@ period: 6
 
 
 processed_data:
-  cutoff: data/cutoff_data.csv
-  event_data: data/event_data.csv
-  clustered_data: data/kmeans.csv
-  labeled_data: data/labeled_data.csv
-  featured_data: data/processed/featured_data.csv
-  predicted: data/processed/all_data_classes.csv
+  cutoff: data/data/cutoff_data.csv
+  event_data: data/data/event_data.csv
+  clustered_data: data/data/kmeans.csv
+  labeled_data: data/data/labeled_data.csv
+  featured_data: data/data/processed/featured_data.csv
+  predicted: data/data/processed/all_data_classes.csv
