@@ -23,9 +23,7 @@ def cutoff(config_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="...")
-
     parser.add_argument("--config", default="params.yaml")
-
     args = parser.parse_args()
 
     get_data(args.config)
