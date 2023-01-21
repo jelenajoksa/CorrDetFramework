@@ -1,0 +1,8 @@
+pandas
+numpy
+sklearn
+tslearn
+matplotlib
+pyyaml
+plotly
+tsfresh
