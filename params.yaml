@@ -22,3 +22,7 @@ processed_data:
   labeled_data: data/data/labeled_data.csv
   featured_data: data/data/processed/featured_data.csv
   predicted: data/data/processed/all_data_classes.csv
+
+clustering:
+  no_clusters: 100
+  random_state: 10
