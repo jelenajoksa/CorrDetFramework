@@ -120,14 +120,13 @@ def similar_companies(config_path):
     companies_export = pd.concat([companies_export, companies_15])
     companies_export.to_csv('data/data/labeled_data.csv', index=False)
 
-
-    #comment out this part to preview all 15 similar companies with the target one
+    # comment out this part to preview all 15 similar companies with the target one
     ''' 
     similar_15 = df_all.nsmallest(15, 'corr')
     similar_15 = similar_15.T
     similar_15.columns = similar_15.iloc[0, :]
     similar_15 = similar_15.iloc[1:, :]
-    
+
     fig = px.line(similar_15, x=similar_15.index, y=similar_15.columns, title='Podobna podjetja')
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in similar_15.columns else ())
@@ -156,6 +155,7 @@ def similar_companies(config_path):
                   annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
     fig.show()
     '''
+
 
 
 if __name__ == "__main__":

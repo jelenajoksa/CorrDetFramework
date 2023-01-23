@@ -21,6 +21,7 @@ processed_data:
   clustered_data: data/data/kmeans.csv
   labeled_data: data/data/labeled_data.csv
   featured_data: data/data/processed/featured_data.csv
+  mistakes: data/data/confusion_matrix_diff.csv
   predicted: data/data/processed/all_data_classes.csv
 
 clustering:
