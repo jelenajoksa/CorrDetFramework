@@ -26,3 +26,5 @@ processed_data:
 clustering:
   no_clusters: 100
   random_state: 10
+  cluster_example: 79
+  company_example: 'PS0000270158'
