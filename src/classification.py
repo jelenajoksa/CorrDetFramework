@@ -162,11 +162,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     #feature_extraction(args.config)
-    #classification(args.config)
-    plot_mistakes(args.config)
+    classification(args.config)
+    #plot_mistakes(args.config)
 
     '''
-    AUC: 90.09%, accuracy: 79.44% 
+    
+    AUC: 91.69%, accuracy: 82.94% 
     
     Pipeline(steps=[('standardscaler', StandardScaler()),
                     ('logisticregression', LogisticRegression(C=30))])
@@ -176,9 +177,9 @@ if __name__ == "__main__":
                     ('logisticregression', LogisticRegression(C=30))])
     
     
-    [[144  36]
-     [ 38 142]]
-    AUC: 89.08%, accuracy: 81.11% 
+    [[127  20]
+     [ 30 116]]
+    AUC: 92.23%, accuracy: 86.35% 
     
     RandomForestClassifier(min_samples_leaf=5)
     
@@ -186,6 +187,6 @@ if __name__ == "__main__":
     Confusion matrix for RandomForestClassifier(min_samples_leaf=5)
     
     
-    [[143  37]
-     [ 31 149]]
+    [[127  20]
+     [ 20 126]]
     '''

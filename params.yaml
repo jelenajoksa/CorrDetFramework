@@ -19,7 +19,7 @@ processed_data:
   cutoff: data/data/cutoff_data.csv
   event_data: data/data/event_data.csv
   clustered_data: data/data/kmeans.csv
-  labeled_data: data/data/labeled_data.csv
+  labeled_data: data/data/labeled_data_no_dupl.csv
   featured_data: data/data/processed/featured_data.csv
   mistakes: data/data/confusion_matrix_diff.csv
   predicted: data/data/processed/all_data_classes.csv
@@ -28,4 +28,4 @@ clustering:
   no_clusters: 100
   random_state: 10
   cluster_example: 79
-  company_example: 'PS0000270158'
+  company_example: 'PS0000129839'
