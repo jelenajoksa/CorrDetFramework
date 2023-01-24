@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import tsfresh
-from tsfresh import extract_relevant_features
 from tsfresh import extract_features, select_features
 from tsfresh.feature_extraction import settings
 from tsfresh.feature_extraction import EfficientFCParameters
@@ -104,12 +103,12 @@ def classification(config_path):
         df_cm['p_bin'] = p_bin
         df_cm['y'] = y_test.values
         df_cm['company'] = company_test.values
-        df_cm.to_csv('data/data/confusion_matrix.csv', index=False)
+        #df_cm.to_csv('data/data/confusion_matrix.csv', index=False)
         cm_diff = df_cm[ df_cm['p_bin'] != df_cm['y'] ]
         cm_diff.to_csv('data/data/confusion_matrix_diff.csv', index=False)
 
 
-def plot_mistakes(config_path):
+def plot_cm_examples(config_path):
     config = read_params(config_path)
     df_all = get_data(config_path)
     data_label_path = config['processed_data']['mistakes']
@@ -163,7 +162,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     #feature_extraction(args.config)
     classification(args.config)
-    #plot_mistakes(args.config)
+    #plot_cm_examples(args.config)
 
     '''
     
