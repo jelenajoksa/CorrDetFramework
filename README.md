@@ -13,5 +13,6 @@ Step 2. In params.yaml set the parameters values:
 2. for the event and time period
 
 Step 3. Run  python src/cutoff.py, outcome: data/data/cutoff_data.csv
+
 Step 4. Follow the process from the pipeline.png
 
