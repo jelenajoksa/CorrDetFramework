@@ -8,6 +8,10 @@ Data file should be named 'original_data.csv' and stored in data/data directory
 Step 1. Install all the requirements
 pip install -r requirements.txt
 
-Step 2. In params.yaml set the parameters values for the total transactions amount per company and for the event and time period
+Step 2. In params.yaml set the parameters values:
+1. for the total transactions amount per company and 
+2. for the event and time period
 
 Step 3. Run  python src/cutoff.py, outcome: data/data/cutoff_data.csv
+Step 4. Follow the process from the pipeline.png
+
