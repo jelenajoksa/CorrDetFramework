@@ -142,6 +142,7 @@ def classification(config_path):
         df_cm['y'] = y_test.values
         df_cm['company'] = company_test.values
         df_cm.to_csv('data/data/predictions.csv', index=False)
+        df_cm.to_csv('results/predictions.csv', index=False)
 
         cm_false_p = df_cm.loc[(df_cm['p_bin'] == 1) & (df_cm['y'] == 0)]
         cm_false_p.to_csv('data/data/false_pos_predictions.csv', index=False)
