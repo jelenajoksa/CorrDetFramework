@@ -203,8 +203,7 @@ def plot_cm_examples(config_path):
     df_normal.columns = df_normal.iloc[0, :]
     df_normal = df_normal.iloc[1:-1, :]
 
-    #for column in df_normal.columns:
-    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false positive predictions')
+    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false positive predictions',width=1300, height=1000)
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in df_normal.columns else ())
     fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
@@ -231,9 +230,10 @@ def plot_cm_examples(config_path):
     fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
     fig.show()
-    fig.write_html('plots/cm/false_pos_pred.html')
+    fig.write_html('plots/cm/false_pos_pred_2.html')
 
     df_normal = pd.DataFrame()
+
     # false_negative
     for n_company in false_neg_comp:
         df_icompany = df_all[df_all['podjetje'] == n_company]
@@ -243,8 +243,7 @@ def plot_cm_examples(config_path):
     df_normal.columns = df_normal.iloc[0, :]
     df_normal = df_normal.iloc[1:-1, :]
 
-    # for column in df_normal.columns:
-    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false negative predictions')
+    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false negative predictions', width=1300, height=1000)
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in df_normal.columns else ())
     fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
@@ -271,7 +270,7 @@ def plot_cm_examples(config_path):
     fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
     fig.show()
-    fig.write_html('plots/cm/false_pos_pred.html')
+    fig.write_html('plots/cm/false_neg_pred_2.html')
 
     df_normal_t = pd.DataFrame()
 
@@ -284,7 +283,7 @@ def plot_cm_examples(config_path):
     df_normal_t = df_normal_t.iloc[1:-1, :]
 
     #for column in df_normal.columns:
-    fig = px.line(df_normal_t, x=df_normal_t.index, y=df_normal_t.columns, title='Companies with true predictions')
+    fig = px.line(df_normal_t, x=df_normal_t.index, y=df_normal_t.columns, title='Companies with true predictions',width=1300, height=1000)
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in df_normal_t.columns else ())
     fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
@@ -311,7 +310,7 @@ def plot_cm_examples(config_path):
     fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
     fig.show()
-    fig.write_html('plots/cm/true_pred.html')
+    fig.write_html('plots/cm/true_pred_2.html')
 
 
 def feature_extraction(config_path):
