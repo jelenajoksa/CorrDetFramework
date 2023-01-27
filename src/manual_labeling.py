@@ -118,7 +118,7 @@ def similar_companies(config_path):
 
     companies_15 = df_all.nsmallest(15, 'corr')
     companies_export = pd.concat([companies_export, companies_15])
-    companies_export.to_csv('data/data/data_label.csv', index=False)
+    #companies_export.to_csv('data/data/data_label.csv', index=False)
 
     # comment out this part to preview all 15 similar companies with the target one
 
@@ -144,7 +144,7 @@ def similar_companies(config_path):
     fig.add_vrect(x0='2004-12', x1='2012-02', annotation_text="PAHOR", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="green", opacity=0.05)
     fig.add_vrect(x0='2008-11', x1='2013-03', annotation_text="JANSA", annotation_position="top right",
-                  annotation_textangle=90, line_width=0, fillcolor="blue", opacity=0.05)
+                  annotation_textangle=90, line_width=0, fillcolor="blue",  opacity=0.05)
     fig.add_vrect(x0='2012-02', x1='2014-09', annotation_text="BRATUSEK", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="yellow", opacity=0.05)
     fig.add_vrect(x0='2013-03', x1='2018-09', annotation_text="CERAR", annotation_position="top right",
@@ -162,5 +162,5 @@ if __name__ == "__main__":
     parser.add_argument("--config", default="params.yaml")
     args = parser.parse_args()
     get_data(args.config)
-    get_interesting_examples(args.config)
+    #get_interesting_examples(args.config)
     similar_companies(args.config)

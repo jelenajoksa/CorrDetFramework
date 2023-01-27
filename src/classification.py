@@ -3,6 +3,7 @@ import yaml
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.offline as po
 import tsfresh
 from tsfresh import extract_features, select_features
 from tsfresh.feature_extraction import settings
@@ -10,13 +11,13 @@ from tsfresh.feature_extraction import EfficientFCParameters
 from tsfresh.utilities.dataframe_functions import impute
 from tslearn.preprocessing import TimeSeriesScalerMeanVariance
 from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LogisticRegression as LR
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.ensemble import RandomForestClassifier as RF
-from sklearn.metrics import roc_auc_score as AUC, accuracy_score as accuracy
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_auc_score as auc, accuracy_score as accuracy, precision_score, recall_score, f1_score
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.model_selection import StratifiedKFold
 
 def read_params(config_path):
     with open(config_path) as yaml_file:
@@ -68,7 +69,9 @@ def feature_extraction(config_path):
     f= tsfresh.extract_features( data_zcore , column_id = 'id', default_fc_parameters =settings, column_sort = 'time', n_jobs = 0)
     impute(f)
     assert f.isnull().sum().sum() == 0
-    split = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=0)
+    #split = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=0)
+    split = StratifiedKFold(n_splits=10)
+
     for train_index, test_index in split.split(f, y, company):
         X_train, X_test = f.iloc[train_index], f.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -78,7 +81,7 @@ def feature_extraction(config_path):
     print("selected {} features.".format(len(train_features_selected.columns)))
     x_train = X_train[train_features_selected.columns].copy()
     x_test = X_test[train_features_selected.columns].copy()
-
+    ''''
     #training set for prediction:
     x_train_union = pd.concat([x_train, x_test])
     y_train_union = pd.concat([y_train, y_test])
@@ -94,11 +97,14 @@ def feature_extraction(config_path):
     assert f1.isnull().sum().sum() == 0
     x_pred = f1[train_features_selected.columns].copy()
     return  x_train, y_train, x_test, y_test, company_train, company_test, company_pred, x_train_union, y_train_union, x_pred
-
+    '''
+    return x_train, y_train, x_test, y_test, company_train, company_test
 
 
 def classification(config_path):
-    x_train, y_train, x_test, y_test, company_train, company_test, company_pred, x_train_union, y_train_union, x_pred = feature_extraction(config_path)
+    #x_train, y_train, x_test, y_test, company_train, company_test, company_pred, x_train_union, y_train_union, x_pred = feature_extraction(config_path)
+    x_train, y_train, x_test, y_test, company_train, company_test = feature_extraction(config_path)
+
     classifiers = [
         # LR( C = 10 ),
         # LR( C = 1 ),
@@ -116,20 +122,35 @@ def classification(config_path):
         p = clf.predict_proba( x_test )[:,1]
         p_bin = clf.predict( x_test )
         cm = confusion_matrix(y_test, p_bin)
-        auc = AUC( y_test, p )
+        roc_auc = auc( y_test, p_bin )
         acc = accuracy( y_test, p_bin )
-        print( "AUC: {:.2%}, accuracy: {:.2%} \n\n{}\n\n".format( auc, acc, clf ))
+        prec = precision_score(y_test, p_bin)
+        rec = recall_score(y_test, p_bin)
+        f1 = f1_score(y_test, p_bin)
+
+
+
+        print( "AUC: {:.2%}, accuracy: {:.2%}, precision: {:.2%}, recall: {:.2%}, F1 score: {:.2%} \n\n{}\n\n".format( roc_auc, acc, prec, rec, f1, clf ))
         print('Confusion matrix for {}\n\n'.format(clf))
         print(cm)
+        print("Classification Report: ",classification_report(y_test, p_bin))
+
+        #comment out this part for printing the confusion matrix
         df_cm = pd.DataFrame()
         df_cm['p'] = p
         df_cm['p_bin'] = p_bin
         df_cm['y'] = y_test.values
         df_cm['company'] = company_test.values
-        #df_cm.to_csv('data/data/confusion_matrix.csv', index=False)
-        cm_diff = df_cm[ df_cm['p_bin'] != df_cm['y'] ]
-        cm_diff.to_csv('data/data/confusion_matrix_diff.csv', index=False)
+        df_cm.to_csv('data/data/predictions.csv', index=False)
 
+        cm_false_p = df_cm.loc[(df_cm['p_bin'] == 1) & (df_cm['y'] == 0)]
+        cm_false_p.to_csv('data/data/false_pos_predictions.csv', index=False)
+        cm_false_n = df_cm.loc[(df_cm['p_bin'] == 0) & (df_cm['y'] == 1)]
+        cm_false_n.to_csv('data/data/false_neg_predictions.csv', index=False)
+        cm_true = df_cm[df_cm['p_bin'] == df_cm['y']]
+        cm_true.to_csv('data/data/true_predictions.csv', index=False)
+        '''
+        
     for clf1 in classifiers:
         clf1.fit(x_train_union, y_train_union)
         p1 = clf1.predict_proba(x_pred)[:, 1]
@@ -153,25 +174,37 @@ def classification(config_path):
         #df_cm.to_csv('data/data/confusion_matrix.csv', index=False)
         #cm_diff = df_cm[ df_cm['p_bin'] != df_cm['y'] ]
         #cm_diff.to_csv('data/data/confusion_matrix_diff.csv', index=False)
-
+        '''
 def plot_cm_examples(config_path):
     config = read_params(config_path)
-    df_all = get_data(config_path)
-    data_label_path = config['processed_data']['mistakes']
-    df_mistakes = pd.read_csv(data_label_path, sep=',', encoding='utf-8')
-    mistakes_comp = df_mistakes['company'].tolist()
+    df_labeled, df_cutoff = get_data(config_path)
+    df_all = df_cutoff
+
+    false_neg_path = config['processed_data']['false_neg_pred']
+    df_false_neg = pd.read_csv(false_neg_path, sep=',', encoding='utf-8')
+    false_neg_comp = df_false_neg['company'].tolist()
+
+    false_pos_path = config['processed_data']['false_pos_pred']
+    df_false_pos = pd.read_csv(false_pos_path, sep=',', encoding='utf-8')
+    false_pos_comp = df_false_pos['company'].tolist()
+
+    data_true_path = config['processed_data']['true_pred']
+    df_true = pd.read_csv(data_true_path, sep=',', encoding='utf-8')
+    true_comp = df_true['company'].tolist()
 
     df_normal = pd.DataFrame()
 
-    for n_company in mistakes_comp:
-        df_icompany = df_all[df_all['company'] == n_company]
+    #false_positive
+    for n_company in false_pos_comp:
+        df_icompany = df_all[df_all['podjetje'] == n_company]
         df_normal = pd.concat([df_normal, df_icompany])
 
     df_normal = df_normal.T
     df_normal.columns = df_normal.iloc[0, :]
-    df_normal = df_normal.iloc[1:, :]
+    df_normal = df_normal.iloc[1:-1, :]
 
-    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Vzorec podjetij iz izbrane skupine')
+    #for column in df_normal.columns:
+    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false positive predictions')
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in df_normal.columns else ())
     fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
@@ -198,6 +231,133 @@ def plot_cm_examples(config_path):
     fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
     fig.show()
+    fig.write_html('plots/cm/false_pos_pred.html')
+
+    df_normal = pd.DataFrame()
+    # false_negative
+    for n_company in false_neg_comp:
+        df_icompany = df_all[df_all['podjetje'] == n_company]
+        df_normal = pd.concat([df_normal, df_icompany])
+
+    df_normal = df_normal.T
+    df_normal.columns = df_normal.iloc[0, :]
+    df_normal = df_normal.iloc[1:-1, :]
+
+    # for column in df_normal.columns:
+    fig = px.line(df_normal, x=df_normal.index, y=df_normal.columns, title='Companies with false negative predictions')
+    fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
+    if trace.name in df_normal.columns else ())
+    fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
+    fig.add_vrect(x0='2003-01', x1='2004-12', annotation_text="ROP", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, opacity=0.05)
+    fig.add_vrect(x0='2003-01', x1='2008-11', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, opacity=0.05)
+    fig.add_vline(x='2008-11', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2012-02', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2014-09', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2013-03', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2018-09', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2020-03', line_dash="dash", opacity=0.5)
+    fig.add_vrect(x0='2004-12', x1='2012-02', annotation_text="PAHOR", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="green", opacity=0.05)
+    fig.add_vrect(x0='2008-11', x1='2013-03', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="blue", opacity=0.05)
+    fig.add_vrect(x0='2012-02', x1='2014-09', annotation_text="BRATUSEK", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="yellow", opacity=0.05)
+    fig.add_vrect(x0='2013-03', x1='2018-09', annotation_text="CERAR", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="pink", opacity=0.05)
+    fig.add_vrect(x0='2014-09', x1='2020-03', annotation_text="SAREC", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="black", opacity=0.05)
+    fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
+    fig.show()
+    fig.write_html('plots/cm/false_pos_pred.html')
+
+    df_normal_t = pd.DataFrame()
+
+    for n_company in true_comp:
+        df_icompany = df_all[df_all['podjetje'] == n_company]
+        df_normal_t = pd.concat([df_normal_t, df_icompany])
+
+    df_normal_t = df_normal_t.T
+    df_normal_t.columns = df_normal_t.iloc[0, :]
+    df_normal_t = df_normal_t.iloc[1:-1, :]
+
+    #for column in df_normal.columns:
+    fig = px.line(df_normal_t, x=df_normal_t.index, y=df_normal_t.columns, title='Companies with true predictions')
+    fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
+    if trace.name in df_normal_t.columns else ())
+    fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
+    fig.add_vrect(x0='2003-01', x1='2004-12', annotation_text="ROP", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, opacity=0.05)
+    fig.add_vrect(x0='2003-01', x1='2008-11', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, opacity=0.05)
+    fig.add_vline(x='2008-11', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2012-02', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2014-09', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2013-03', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2018-09', line_dash="dash", opacity=0.5)
+    fig.add_vline(x='2020-03', line_dash="dash", opacity=0.5)
+    fig.add_vrect(x0='2004-12', x1='2012-02', annotation_text="PAHOR", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="green", opacity=0.05)
+    fig.add_vrect(x0='2008-11', x1='2013-03', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="blue", opacity=0.05)
+    fig.add_vrect(x0='2012-02', x1='2014-09', annotation_text="BRATUSEK", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="yellow", opacity=0.05)
+    fig.add_vrect(x0='2013-03', x1='2018-09', annotation_text="CERAR", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="pink", opacity=0.05)
+    fig.add_vrect(x0='2014-09', x1='2020-03', annotation_text="SAREC", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="black", opacity=0.05)
+    fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
+                  annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
+    fig.show()
+    fig.write_html('plots/cm/true_pred.html')
+
+
+def feature_extraction(config_path):
+    data_label_zcore, df_cutoff_zscore = get_data_zcore(config_path)
+    y = data_label_zcore.label
+    company = data_label_zcore.company
+    data_zcore = data_label_zcore.iloc[:,:-2]
+    data_zcore = data_zcore.stack()
+    data_zcore.index.rename([ 'id', 'time' ], inplace = True )
+    data_zcore = data_zcore.reset_index()
+    settings = EfficientFCParameters()
+    f= tsfresh.extract_features( data_zcore , column_id = 'id', default_fc_parameters =settings, column_sort = 'time', n_jobs = 0)
+    impute(f)
+    assert f.isnull().sum().sum() == 0
+    #split = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=0)
+    split = StratifiedKFold(n_splits=10)
+
+    for train_index, test_index in split.split(f, y, company):
+        X_train, X_test = f.iloc[train_index], f.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        company_train, company_test = company.iloc[train_index], company.iloc[test_index]
+    print("selecting features...")
+    train_features_selected = select_features(X_train, y_train, fdr_level=0.0001, n_jobs=0)
+    print("selected {} features.".format(len(train_features_selected.columns)))
+    x_train = X_train[train_features_selected.columns].copy()
+    x_test = X_test[train_features_selected.columns].copy()
+    ''''
+    #training set for prediction:
+    x_train_union = pd.concat([x_train, x_test])
+    y_train_union = pd.concat([y_train, y_test])
+
+    #dataset to be predicted:
+    company_pred = df_cutoff_zscore.company
+    df_zscore = df_cutoff_zscore.iloc[:, :-1]
+    df_zscore = df_zscore.stack()
+    df_zscore.index.rename(['id', 'time'], inplace=True)
+    df_zscore = df_zscore.reset_index()
+    f1 = tsfresh.extract_features( df_zscore , column_id = 'id', default_fc_parameters = settings, column_sort = 'time', n_jobs = 0)
+    impute(f1)
+    assert f1.isnull().sum().sum() == 0
+    x_pred = f1[train_features_selected.columns].copy()
+    return  x_train, y_train, x_test, y_test, company_train, company_test, company_pred, x_train_union, y_train_union, x_pred
+    '''
+    return x_train, y_train, x_test, y_test, company_train, company_test
+
+
 
 
 ''' 
@@ -236,7 +396,7 @@ if __name__ == "__main__":
     get_data_zcore(args.config)
     #feature_extraction(args.config)
     classification(args.config)
-    #plot_cm_examples(args.config)
+    plot_cm_examples(args.config)
 
     '''
     

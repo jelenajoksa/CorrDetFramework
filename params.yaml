@@ -21,11 +21,13 @@ processed_data:
   clustered_data: data/data/kmeans.csv
   labeled_data: data/data/labeled_data_no_dupl.csv
   featured_data: data/data/processed/featured_data.csv
-  mistakes: data/data/confusion_matrix_diff.csv
+  false_neg_pred: data/data/false_neg_predictions.csv
+  false_pos_pred: data/data/false_pos_predictions.csv
+  true_pred: data/data/true_predictions.csv
   predicted: data/data/processed/all_data_classes.csv
 
 clustering:
   no_clusters: 100
   random_state: 10
   cluster_example: 79
-  company_example: 'PS0000129839'
+  company_example: 'PS0000016037'
