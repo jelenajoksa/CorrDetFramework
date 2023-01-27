@@ -16,3 +16,4 @@ Step 3. Run  python src/cutoff.py, outcome: data/data/cutoff_data.csv
 
 Step 4. Follow the process from the pipeline.png
 
+![pipeline](https://user-images.githubusercontent.com/62762528/214508239-61869718-ef90-4344-850d-408482fd5c4f.png)
