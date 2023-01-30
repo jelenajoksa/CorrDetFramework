@@ -16,6 +16,7 @@ All .py scripts are in src directory and all the output files with the data come
 
 Step 3. Run python src/cutoff.py, outcome: data/data/cutoff_data.csv
 
-Step 4. Follow the process from the pipeline.png
+Step 4. Follow the STEP 1 and STEP 2 from the Framework pipeline:
 
-![pipeline](https://user-images.githubusercontent.com/62762528/214508239-61869718-ef90-4344-850d-408482fd5c4f.png)
+![step1](https://user-images.githubusercontent.com/62762528/215510473-7ff91d10-1cea-4f60-a4c6-34ba286f4589.png)
+![step2](https://user-images.githubusercontent.com/62762528/215510958-6f39eeec-3ea4-4929-822f-5b246566feb3.png)
