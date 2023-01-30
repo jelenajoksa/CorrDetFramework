@@ -48,7 +48,6 @@ def clustering(config_path):
     clusters_df.to_csv(clustered_data_path, sep=",", index=False)
     return algo, x_train, y_pred, silhouette_avg
 
-#Output1: Plots
 
 #We plot 10 separate figures with 10 clusters in each, for the better preview
 def km_plot(config_path):
