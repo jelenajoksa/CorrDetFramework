@@ -24,7 +24,7 @@ processed_data:
   false_neg_pred: data/data/false_neg_predictions.csv
   false_pos_pred: data/data/false_pos_predictions.csv
   true_pred: data/data/true_predictions.csv
-  predicted: data/data/processed/all_data_classes.csv
+  predicted: data/data/all_predictions.csv
 
 clustering:
   no_clusters: 100
