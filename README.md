@@ -9,10 +9,12 @@ Step 1. Install all the requirements
 pip install -r requirements.txt
 
 Step 2. In params.yaml set the parameters values:
-1. for the total transactions amount per company and 
-2. for the event and time period
+1. cutoff: for the total transactions amount per company and 
+2. event, period: event represents the exact date and period is number of months before and after the event
 
-Step 3. Run  python src/cutoff.py, outcome: data/data/cutoff_data.csv
+All .py scripts are in src directory and all the output files with the data come from executing the scripts
+
+Step 3. Run python src/cutoff.py, outcome: data/data/cutoff_data.csv
 
 Step 4. Follow the process from the pipeline.png
 

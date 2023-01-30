@@ -69,9 +69,7 @@ def feature_extraction(config_path):
     f= tsfresh.extract_features( data_zcore , column_id = 'id', default_fc_parameters =settings, column_sort = 'time', n_jobs = 0)
     impute(f)
     assert f.isnull().sum().sum() == 0
-    #split = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=0)
     split = StratifiedKFold(n_splits=10)
-
     for train_index, test_index in split.split(f, y, company):
         X_train, X_test = f.iloc[train_index], f.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -136,7 +134,7 @@ def classification(config_path):
         df_cm['p_bin'] = p_bin
         df_cm['y'] = y_test.values
         df_cm['company'] = company_test.values
-        df_cm.to_csv('data/data/predictions.csv', index=False)
+        #df_cm.to_csv('data/data/predictions.csv', index=False)
         df_cm.to_csv('results/predictions.csv', index=False)
 
         cm_false_p = df_cm.loc[(df_cm['p_bin'] == 1) & (df_cm['y'] == 0)]

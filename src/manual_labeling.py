@@ -118,7 +118,7 @@ def similar_companies(config_path):
 
     companies_15 = df_all.nsmallest(15, 'corr')
     companies_export = pd.concat([companies_export, companies_15])
-    #companies_export.to_csv('data/data/data_label.csv', index=False)
+    companies_export.to_csv('data/data/data_label.csv', index=False)
 
     # comment out this part to preview all 15 similar companies with the target one
 
