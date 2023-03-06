@@ -1,0 +1,5 @@
+Overall Accuracy: mean 86.37%, standard deviation 2.58%
+Overall Precision: mean 84.48%, standard deviation 2.89%
+Overall F1-Score: mean 86.59%, standard deviation 2.45%
+Overall ROC AUC: mean 93.36%, standard deviation 2.29%
+Overall Recall: mean 88.51%, standard deviation 5.31%
