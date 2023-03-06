@@ -3,6 +3,7 @@ numpy
 sklearn
 tslearn
 matplotlib
+seaborn
 pyyaml
 plotly
 tsfresh
