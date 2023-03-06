@@ -211,9 +211,7 @@ def plot_cm_examples(config_path):
 def plot_predictions(config_path):
     df_pred, df_all, biggest = get_data(config_path)
 
-    # lowest_c = lowest['company'].tolist()
     biggest_c = biggest['company'].tolist()
-    # middle_c = middle['company'].tolist()
 
     df_normal = pd.DataFrame()
 
