@@ -83,14 +83,14 @@ def get_data_zcore(config_path):
 def euclidean_distance(v1, v2):
     return np.sqrt(np.sum((v1 - v2) ** 2))
 
-#input je clustersd data - kmeans.csv
+#input is clustersd data - kmeans.csv
 def similar_companies(config_path):
     config = read_params(config_path)
     df_all = get_data(config_path)
     df_all_zcore = get_data_zcore(config_path)
     #the line below is only run for the first time, then it goes under the comment
     #companies_export = pd.DataFrame()
-    #two lines below are not under the comment if the line above is and vice versa
+    #two lines below are not under the comment if the line above is not and vice versa
     data_path = config['processed_data']['labeled_data']
     companies_export = pd.read_csv(data_path, sep=',', encoding='utf-8')
 
@@ -127,13 +127,15 @@ def similar_companies(config_path):
     similar_15.columns = similar_15.iloc[0, :]
     similar_15 = similar_15.iloc[1:, :]
     print(similar_15)
-    fig = px.line(similar_15, x=similar_15.index, y=similar_15.columns, title='Podobna podjetja')
+
+
+    fig = px.line(similar_15, x=similar_15.index, y=similar_15.columns, title='Similar companies')
     fig.for_each_trace(lambda trace: trace.update(visible="legendonly")
     if trace.name in similar_15.columns else ())
     fig.add_vline(x='2004-12', line_dash="dash", opacity=0.5)
-    fig.add_vrect(x0='2003-01', x1='2004-12', annotation_text="ROP", annotation_position="top right",
+    fig.add_vrect(x0='2003-01', x1='2004-12', annotation_text="ROP",  annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, opacity=0.05)
-    fig.add_vrect(x0='2003-01', x1='2008-11', annotation_text="JANSA", annotation_position="top right",
+    fig.add_vrect(x0='2003-01', x1='2008-11', annotation_text="JANSA",  annotation_font_size=30,annotation_position="top right",
                   annotation_textangle=90, line_width=0, opacity=0.05)
     fig.add_vline(x='2008-11', line_dash="dash", opacity=0.5)
     fig.add_vline(x='2012-02', line_dash="dash", opacity=0.5)
@@ -141,18 +143,20 @@ def similar_companies(config_path):
     fig.add_vline(x='2013-03', line_dash="dash", opacity=0.5)
     fig.add_vline(x='2018-09', line_dash="dash", opacity=0.5)
     fig.add_vline(x='2020-03', line_dash="dash", opacity=0.5)
-    fig.add_vrect(x0='2004-12', x1='2012-02', annotation_text="PAHOR", annotation_position="top right",
+    fig.add_vrect(x0='2004-12', x1='2012-02', annotation_text="PAHOR",  annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="green", opacity=0.05)
-    fig.add_vrect(x0='2008-11', x1='2013-03', annotation_text="JANSA", annotation_position="top right",
+    fig.add_vrect(x0='2008-11', x1='2013-03', annotation_text="JANSA",  annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="blue",  opacity=0.05)
-    fig.add_vrect(x0='2012-02', x1='2014-09', annotation_text="BRATUSEK", annotation_position="top right",
+    fig.add_vrect(x0='2012-02', x1='2014-09', annotation_text="BRATUSEK",  annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="yellow", opacity=0.05)
-    fig.add_vrect(x0='2013-03', x1='2018-09', annotation_text="CERAR", annotation_position="top right",
+    fig.add_vrect(x0='2013-03', x1='2018-09', annotation_text="CERAR",  annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="pink", opacity=0.05)
-    fig.add_vrect(x0='2014-09', x1='2020-03', annotation_text="SAREC", annotation_position="top right",
+    fig.add_vrect(x0='2014-09', x1='2020-03', annotation_text="SAREC", annotation_font_size=30, annotation_position="top right",
                   annotation_textangle=90, line_width=0, fillcolor="black", opacity=0.05)
-    fig.add_vrect(x0='2018-09', x1='2020-05', annotation_text="JANSA", annotation_position="top right",
-                  annotation_textangle=90, line_width=0, fillcolor="orange", opacity=0.05)
+    fig.update_layout(yaxis=dict(tickfont=dict(size=30)), yaxis2=dict(tickfont=dict(size=30)),
+                      yaxis3=dict(tickfont=dict(size=30)), xaxis1=dict(tickfont=dict(size=30)))
+    fig.update_layout(height=600, width=1400)
+    fig.update_traces(line=dict(width=4))
     fig.show()
 
 
